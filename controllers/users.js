@@ -23,21 +23,19 @@ module.exports = {
                     message: "Email not found"
                 });
             }
-            bcrypt.compare(req.body.password, user[0].password, (err, result) => {
-                if (err) {
-                    return res.json({
-                        message: "Wrong password"
+            if(req.body.password == user[0].password) {
+                jwt.sign({user:user[0]}, 'secretkey', (err, token) => {
+                    return res.status(200).json({
+                        message: "You are logged in successfully",
+                        token: token
                     });
-                }
-                if (result) {
-                    jwt.sign({user:user[0]}, 'secretkey', (err, token) => {
-                        return res.status(200).json({
-                            message: "You are logged in successfully",
-                            token: token
-                        });
-                    });
-                }
-            });
+                });
+            }
+            else {
+                return res.json({
+                    message: "Wrong password"
+                });
+            }
         })
         .catch(err => {
             res.json({
