@@ -1,7 +1,9 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
-const router = require('./routes/products');
+const products = require('./routes/products');
+const users = require('./routes/users');
+const bodyParser = require('body-parser');
 
 //mongodb connection
 mongoose.connect('mongodb://localhost/souqdb');
@@ -26,6 +28,8 @@ app.listen(3000, function(){
 });
 
 //Routes
-app.use('/products', router);
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use('/api/user', users);
 
 //console.log("jjjjjjjjjjjjjjjjj");
