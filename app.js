@@ -31,3 +31,4 @@ app.listen(3000, function(){
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/api/user', users);
+app.use('/api/products', products);
