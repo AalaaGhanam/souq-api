@@ -14,25 +14,33 @@ module.exports = {
         });
     },*/
     
-    login : (req, res, next) => {
+    login : (req, res) => {
         User.find({ email: req.body.email })
         .exec()
         .then(user => {
             if (user.length < 1) {
                 return res.status(401).json({
-                    message: "Auth failed"
+                    message: "Email not found"
                 });
             }
-            jwt.sign({user:user[0]}, 'secretkey', (err, token) => {
-                return res.status(200).json({
-                    message: "Auth successful",
-                    token: token
-                });
+            bcrypt.compare(req.body.password, user[0].password, (err, result) => {
+                if (err) {
+                    return res.json({
+                        message: "Wrong password"
+                    });
+                }
+                if (result) {
+                    jwt.sign({user:user[0]}, 'secretkey', (err, token) => {
+                        return res.status(200).json({
+                            message: "You are logged in successfully",
+                            token: token
+                        });
+                    });
+                }
             });
         })
         .catch(err => {
-            console.log(err);
-            res.status(500).json({
+            res.json({
               error: err
             });
         });
