@@ -35,43 +35,66 @@ const login = (req, res) => {
         });
     });
 };
-
-const addProductToCart = (req, res) => {
-    User.findOne({ _id: req.params.id })
-    .exec()
-    .then(user => {
-        Product.findOne({ _id: req.body.id })
-        .exec()
-        .then(product => {
-            User.findByIdAndUpdate(user._id, 
-                {$push: {cart: {"product": product._id, "quantity": req.body.quantity}}}, 
-                function(err) { 
-                    if(err) {
-                        res.send({
-                            error: 1,
-                            message: err
-                        });
-                    }
-                    res.json({
-                        error: 0,
-                        message: "Your cart has been updated uccessfully"
-                    });
-                });
-        })
-        .catch(err => {
+const addProductToCart = async (req, res) => {
+    let arrayOfProducts = req.body;
+    cartProductsQuantity = 0;
+    cartProductsAvalibale = 0;
+    try {
+        try {
+            userDate = await User.findOne({ _id: req.params.id }).exec();
+        } catch (error) {
             res.json({
                 error: 1,
-                message: "This product cannot be found"
+                message: "This user cannot be found"
             });
-        });
-    })
-    .catch(err => {
+            throw error;
+        }
+        if(arrayOfProducts === undefined || arrayOfProducts.length == 0) {
+            res.json({
+                error: 1,
+                message: "Nothing to add"
+            });
+        } else {
+            for (const item of arrayOfProducts) {
+                try {
+                    productData = await Product.findById(item.id);
+
+                } catch (error) {
+                    res.json({
+                        error: 1,
+                        message: "Product cannot be found"
+                    });
+                    throw error;
+                }
+                if (productData.quantity >= item.quantity) {
+                    User.findByIdAndUpdate(userDate._id, 
+                    {$push: {cart: {"product": productData._id, "quantity": item.quantity}}})
+                    .catch(err => {
+                        throw err;
+                    });
+                    cartProductsQuantity+=1;
+                }
+            }
+            if(cartProductsQuantity!=0) {
+                res.json({
+                    error: 0,
+                    message: "Your cart has been updated uccessfully"
+                });
+            } else {
+                res.json({
+                    error: 0,
+                    message: "The quantity specified greater than the quantity you selected"
+                });
+            }
+        }
+    } catch (error) {
         res.json({
             error: 1,
-            message: "This User cannot be found"
+            message: error
         });
-    });
-};
+        throw error;
+    }
+}
 
 module.exports = {
     login,
