@@ -8,12 +8,14 @@ const login = (req, res) => {
     .then(user => {
         if (user.length < 1) {
             return res.status(401).json({
+                error: 1,
                 message: "Email not found"
             });
         }
         if(req.body.password == user[0].password) {
             jwt.sign({user:user[0]}, 'secretkey', (err, token) => {
                 return res.status(200).json({
+                    error: 0,
                     message: "You are logged in successfully",
                     token: token
                 });
@@ -21,13 +23,15 @@ const login = (req, res) => {
         }
         else {
             return res.json({
+                error: 1,
                 message: "Wrong password"
             });
         }
     })
     .catch(err => {
         res.json({
-          error: err
+            error: 1,
+            message: err
         });
     });
 };
@@ -39,20 +43,32 @@ const addProductToCart = (req, res) => {
         Product.findOne({ _id: req.body.id })
         .exec()
         .then(product => {
-            return res.json({
-                user,
-                product
-            });
+            User.findByIdAndUpdate(user._id, 
+                {$push: {cart: {"product": product._id, "quantity": req.body.quantity}}}, 
+                function(err) { 
+                    if(err) {
+                        res.send({
+                            error: 1,
+                            message: err
+                        });
+                    }
+                    res.json({
+                        error: 0,
+                        message: "Your cart has been updated uccessfully"
+                    });
+                });
         })
         .catch(err => {
             res.json({
-            error: err
+                error: 1,
+                message: "This product cannot be found"
             });
         });
     })
     .catch(err => {
         res.json({
-          error: err
+            error: 1,
+            message: "This User cannot be found"
         });
     });
 };
