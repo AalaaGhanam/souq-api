@@ -38,7 +38,6 @@ const login = (req, res) => {
 const addProductToCart = async (req, res) => {
     let arrayOfProducts = req.body;
     cartProductsQuantity = 0;
-    cartProductsAvalibale = 0;
     try {
         try {
             userDate = await User.findOne({ _id: req.params.id }).exec();
