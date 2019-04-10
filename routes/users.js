@@ -5,6 +5,7 @@ const { login } = require('../controllers/users');
 
 router.use(bodyParser.json());
 
+//api/user/login
 router.route('/login')
     .post(login)
 
