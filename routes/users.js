@@ -1,11 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const bodyParser = require('body-parser');
-const UsersController = require('../controllers/users');
+const { test, login } = require('../controllers/users');
 
 router.use(bodyParser.json());
 
 router.route('/login')
-    .post(UsersController.login)
+    .post(login)
+    
+router.route('/test')
+    .post(test)
 
 module.exports = router;

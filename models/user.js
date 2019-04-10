@@ -14,7 +14,7 @@ let userSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    card: {
+    cart: {
         type: Array
     }
 });
