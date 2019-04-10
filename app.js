@@ -34,3 +34,4 @@ app.use('/api/user', users);
 
 //api/products/getAllProducts
 app.use('/api/products', products);
+
