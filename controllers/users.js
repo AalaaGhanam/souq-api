@@ -31,13 +31,6 @@ const login = (req, res) => {
     });
 };
 
-const test = (req, res) => {
-    return res.json({
-        message: "ssssssssssss"
-    });
-};
-
 module.exports = {
-    login,
-    test
+    login
 };

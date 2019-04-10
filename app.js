@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const users = require('./routes/users');
+const products = require('./routes/products');
 const bodyParser = require('body-parser');
 
 //mongodb connection
@@ -28,5 +29,8 @@ app.listen(3000, function(){
 //Routes
 app.use(bodyParser.urlencoded({ extended: true }));
 
+//api/user/login
 app.use('/api/user', users);
+
+//api/products/getAllProducts
 app.use('/api/products', products);
