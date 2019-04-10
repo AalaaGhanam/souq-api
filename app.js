@@ -28,4 +28,5 @@ app.listen(3000, function(){
 //Routes
 app.use(bodyParser.urlencoded({ extended: true }));
 
+//api/user/login
 app.use('/api/user', users);
