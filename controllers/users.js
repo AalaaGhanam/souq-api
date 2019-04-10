@@ -1,4 +1,5 @@
 let User = require('../models/user');
+let Product = require('../models/product');
 const jwt = require('jsonwebtoken');
 
 const login = (req, res) => {
@@ -31,6 +32,32 @@ const login = (req, res) => {
     });
 };
 
+const addProductToCart = (req, res) => {
+    User.findOne({ _id: req.params.id })
+    .exec()
+    .then(user => {
+        Product.findOne({ _id: req.body.id })
+        .exec()
+        .then(product => {
+            return res.json({
+                user,
+                product
+            });
+        })
+        .catch(err => {
+            res.json({
+            error: err
+            });
+        });
+    })
+    .catch(err => {
+        res.json({
+          error: err
+        });
+    });
+};
+
 module.exports = {
-    login
+    login,
+    addProductToCart
 };
