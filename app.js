@@ -5,7 +5,7 @@ const products = require('./routes/products');
 const bodyParser = require('body-parser');
 
 //mongodb connection
-mongoose.connect('mongodb://localhost/souqdb');
+mongoose.connect('mongodb://localhost/souqdb',{ family: 4, useNewUrlParser: true, useFindAndModify: false });
 let db = mongoose.connection;
 
 //Check connection
