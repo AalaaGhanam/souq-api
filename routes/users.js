@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bodyParser = require('body-parser');
-const { login, addProductToCart } = require('../controllers/users');
+const { login, addProductToCart, checkOut } = require('../controllers/users');
 const { verifyUser } = require('../middlewares/index');
 
 router.use(bodyParser.json());
@@ -13,5 +13,9 @@ router.route('/login')
 //api/user/addProductToCart:id
 router.route('/addProductToCart/:id')
     .post(addProductToCart, verifyUser)
+
+//api/user/getAllProducts
+router.route('/checkOut')
+    .get(verifyUser, checkOut);
 
 module.exports = router;

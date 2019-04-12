@@ -9,7 +9,7 @@ const verifyUser = (req, res, next) => {
                     message: 'Auth failed'
                 });
             } else {
-                authData
+                req.authData = authData;
                 next();
             }
         });

@@ -36,6 +36,7 @@ const login = (req, res) => {
         });
     });
 };
+
 const addProductToCart =  (req, res) => {
     let arrayOfProducts = req.body;
     let cartProductsQuantity = 0;
@@ -87,7 +88,63 @@ const addProductToCart =  (req, res) => {
     })
 }
 
+const checkOut = async(req, res) => {
+    const user = req.authData.user;
+    User.findById(user._id,  async(error, userData) => {
+        if (error || !userData) {
+            res.json({
+                error: 1,
+                message: "This user cannot be found"
+            });
+            return
+        }
+        productsTotalPrice = 0;
+        totalProducts = 0;
+        if(userData.cart === undefined || userData.cart.length == 0) {
+            res.json({
+                error: 1,
+                message: "Cart is empty"
+            });
+            return
+        } else {
+            for( const product of userData.cart){
+                try {
+                    productData = await Product.findById(product.product);
+                } catch (error) {
+                    throw Error(error);
+                }
+                if (productData) {
+                    if (productData.quantity >= product.quantity) {
+                        totalProducts+=1;
+                        productsTotalPrice+=productData.price;
+                    }
+                }
+            }
+            if(totalProducts > 0) {
+                if( totalProducts < userData.cart.length) {
+                    res.json({
+                        error: 1,
+                        "message": "Some products cannot be found or the quantity specified greater than the quantity you selected"
+                    });
+                } else {
+                    res.json({
+                        error: 0,
+                        "message": "link",
+                        "total price": productsTotalPrice
+                    });
+                }
+            } else {
+                res.json({
+                    error: 1,
+                    message: "Products not exist"
+                });
+            }
+        }
+    });
+}
+
 module.exports = {
     login,
-    addProductToCart
+    addProductToCart,
+    checkOut
 };
