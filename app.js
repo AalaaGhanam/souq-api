@@ -22,7 +22,7 @@ db.on('error', function(err){
 const app = express();
 
 //Start server
-app.listen(300, function(){
+app.listen(3000, function(){
     console.log("Server started on port 3000....");
 });
 
