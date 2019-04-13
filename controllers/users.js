@@ -184,11 +184,13 @@ const success = (req, res) => {
         }
         for(const product of userData.cart) {
             const productData = await Product.findById(product.product);
-            if(productData.quantity < product.quantity) {
-                Product.findByIdAndUpdate(productData._id, {quantity: 0}).exec();
-            } else {
-                let diff = productData.quantity - product.quantity;
-                Product.findByIdAndUpdate(productData._id, {quantity: diff}).exec();
+            if(productData) {
+                if(productData.quantity < product.quantity) {
+                    Product.findByIdAndUpdate(productData._id, {quantity: 0}).exec();
+                } else {
+                    let diff = productData.quantity - product.quantity;
+                    Product.findByIdAndUpdate(productData._id, {quantity: diff}).exec();
+                }
             }
         }
         User.findByIdAndUpdate(userData._id, { $set: { cart: [] }}).exec();;
