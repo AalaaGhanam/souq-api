@@ -1,7 +1,6 @@
 let User = require('../models/user');
 let Product = require('../models/product');
 const jwt = require('jsonwebtoken');
-const mongoose = require('mongoose');
 
 const login = (req, res) => {
     User.find({ email: req.body.email })
@@ -54,34 +53,38 @@ const addProductToCart =  (req, res) => {
             });
             return
         }
+        let productNotFoundArray = [];
         for (const product of arrayOfProducts) {
-            try {
-                productData = await Product.findById(product.id);
-            } catch (error) {
-                res.json({
-                    error: 1,
-                    message: "Product cannot be found"
-                });
-                throw Error(error);
-            }
-            if (productData.quantity >= product.quantity) {
-                User.findByIdAndUpdate(userData._id, 
-                {$push: {cart: {"product": productData._id, "quantity": product.quantity}}})
-                .catch(err => {
-                    throw Error(err);
-                });
-                cartProductsQuantity+=1;
-            }
+            productData = await Product.findById(product.id);
+                if (productData) {
+                    if (productData.quantity >= product.quantity) {
+                        User.findByIdAndUpdate(userData._id, 
+                        {$push: {cart: {"product": productData._id, "quantity": product.quantity}}}).exec();
+                        cartProductsQuantity+=1;
+                    } else {
+                        productNotFoundArray.push('The quantity you selected greater than the quantity of product '+ productData.name);
+                    }
+                } else {
+                    productNotFoundArray.push('product '+ product.product+ ' cannot be found')
+                }
         }
         if(cartProductsQuantity>0) {
-            res.json({
-                error: 0,
-                message: "Your cart has been updated uccessfully"
-            });
+            if(productNotFoundArray.length<=0) {
+                res.json({
+                    error: 0,
+                    message: "Your cart has been updated uccessfully"
+                });
+            } else {
+                res.json({
+                    error: 0,
+                    message: "Your cart has been updated uccessfully",
+                    exceptions: productNotFoundArray,
+                });
+            }
         } else {
             res.json({
                 error: 1,
-                message: "The quantity specified greater than the quantity you selected"
+                message: productNotFoundArray
             });
         }  
     })
