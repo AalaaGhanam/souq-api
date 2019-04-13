@@ -1,6 +1,7 @@
 let User = require('../models/user');
 let Product = require('../models/product');
 const jwt = require('jsonwebtoken');
+const lodash = require('lodash');
 
 const login = (req, res) => {
     User.find({ email: req.body.email })
@@ -58,9 +59,14 @@ const addProductToCart =  (req, res) => {
             productData = await Product.findById(product.id);
                 if (productData) {
                     if (productData.quantity >= product.quantity) {
-                        User.findByIdAndUpdate(userData._id, 
-                        {$push: {cart: {"product": productData._id, "quantity": product.quantity}}}).exec();
-                        cartProductsQuantity+=1;
+                        let picked = lodash.filter(userData.cart, { 'product': productData._id } );
+                        if(picked.length > 0) {
+                            productNotFoundArray.push('Product '+productData.name+' already exist');
+                        } else {
+                            User.findByIdAndUpdate(userData._id, 
+                            {$push: {cart: {"product": productData._id, "quantity": product.quantity}}}).exec();
+                            cartProductsQuantity+=1;
+                        }
                     } else {
                         productNotFoundArray.push('The quantity you selected greater than the quantity of product '+ productData.name);
                     }
