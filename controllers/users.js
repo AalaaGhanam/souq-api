@@ -100,8 +100,6 @@ const addProductToCart =  (req, res) => {
 
 const checkOut = async(req, res) => {
     const user = req.authData.user;
-    const sellerId = 901405851;
-    let link = 'https://sandbox.2checkout.com/checkout/purchase?sid='+sellerId+'&';
     User.findById(user._id,  async(error, userData) => {
         if (error || !userData) {
             res.json({
@@ -112,6 +110,7 @@ const checkOut = async(req, res) => {
         }
         productsTotalPrice = 0;
         totalProducts = 0;
+        totalPrice = 0;
         if(userData.cart === undefined || userData.cart.length == 0) {
             res.json({
                 error: 1,
@@ -119,9 +118,8 @@ const checkOut = async(req, res) => {
             });
             return
         } else {
-            let params = 'mode=2CO&userId='+user._id+'&';
             let productNotFoundArray = [];
-            for( const [index, product] of (userData.cart).entries()){
+            for( const product of userData.cart){
                 productData = await Product.findById(product.product);
                 if (productData) {
                     if (productData.quantity >= product.quantity) {
@@ -142,7 +140,7 @@ const checkOut = async(req, res) => {
                             newPrice = productData.price;
                         }
                         totalProducts+=1;
-                        params += 'li_'+index+'_product_id'+productData._id+'li_'+index+'_name='+productData.name+'&li_'+index+'_price='+newPrice+'&li_'+index+'_quantity='+product.quantity+'&';
+                        totalPrice+=newPrice*product.quantity;
                     } else {
                         productNotFoundArray.push('The quantity you selected greater than the quantity of product '+ productData.name);
                     }
@@ -157,7 +155,8 @@ const checkOut = async(req, res) => {
                         message: productNotFoundArray
                     });
                 } else {
-                    link += params;
+                    const sid = 901405851;
+                    let link = 'https://sandbox.2checkout.com/checkout/purchase?sid='+sid+'&mode=2CO&userId='+user._id+'&li_0_price='+totalPrice;
                     res.json({
                         error: 0,
                         message: link
