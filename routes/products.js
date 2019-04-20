@@ -6,5 +6,5 @@ const { verifyUser } = require('../middlewares/index');
 //api/products/getAllProducts
 router.route('/getAllProducts')
     .get(verifyUser, getAllProducts);
-
+    
 module.exports = router;

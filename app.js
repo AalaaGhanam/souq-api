@@ -5,7 +5,7 @@ const products = require('./routes/products');
 const bodyParser = require('body-parser');
 
 //mongodb connection
-mongoose.connect('mongodb://localhost/souqdb');
+mongoose.connect('mongodb://localhost/souqdb',{ family: 4, useNewUrlParser: true, useFindAndModify: false });
 let db = mongoose.connection;
 
 //Check connection
@@ -29,9 +29,9 @@ app.listen(3000, function(){
 //Routes
 app.use(bodyParser.urlencoded({ extended: true }));
 
-//api/user/login
+//POST: api/user/login
+//POST: api/user/addProductToCart:id
 app.use('/api/user', users);
 
-//api/products/getAllProducts
+//GET: api/products/getAllProducts
 app.use('/api/products', products);
-
