@@ -22,7 +22,7 @@
     "express": "^4.16.4",
     "jsonwebtoken": "^8.5.1",
     "money": "^0.2.0",
-    "mongoose": "^5.5.0",
+    "mongoose": "^5.7.5",
     "nodejs-currency-converter": "^1.0.2",
     "walletjs": "^1.2.1"
   }
